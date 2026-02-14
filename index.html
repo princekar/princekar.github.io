@@ -16,29 +16,27 @@
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
             font-family: 'Quicksand', sans-serif;
             overflow: hidden;
-            touch-action: none; /* Prevents accidental scrolling on mobile */
+            touch-action: none;
         }
 
         .container {
             text-align: center;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px 20px;
             border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             width: 85%;
             max-width: 350px;
             border: 2px solid white;
             z-index: 10;
         }
 
-        /* Animated CSS Heart - Won't break like a GIF! */
         .heart {
             background-color: #ff4d6d;
             display: inline-block;
             height: 50px;
             margin: 0 10px;
             position: relative;
-            top: 0;
             transform: rotate(-45deg);
             width: 50px;
             animation: beat .8s infinite;
@@ -59,7 +57,7 @@
 
         @keyframes beat {
             0% { transform: scale(1) rotate(-45deg); }
-            50% { transform: scale(1.2) rotate(-45deg); }
+            50% { transform: scale(1.1) rotate(-45deg); }
             100% { transform: scale(1) rotate(-45deg); }
         }
 
@@ -85,24 +83,22 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
-            z-index: 5;
         }
 
         #noBtn {
             background-color: #adb5bd;
             color: white;
-            position: relative; /* Starts in the flow, then becomes fixed */
-            z-index: 10;
+            transition: 0.1s ease;
+            z-index: 100;
         }
 
         #success-msg { display: none; }
-        #success-msg h1 { color: #ff1e4d; }
     </style>
 </head>
 <body>
@@ -115,8 +111,8 @@
                 <button id="yesBtn" onclick="showSuccess()">Yes</button>
                 <button id="noBtn" 
                         onmouseover="moveButton()" 
-                        onclick="moveButton()" 
-                        ontouchstart="moveButton()">No</button>
+                        ontouchstart="moveButton()"
+                        onclick="moveButton()">No</button>
             </div>
         </div>
 
@@ -130,14 +126,24 @@
     <script>
         function moveButton() {
             const noBtn = document.getElementById('noBtn');
-            
-            // On first interaction, switch to fixed positioning
+            const yesBtn = document.getElementById('yesBtn');
+            const yesRect = yesBtn.getBoundingClientRect();
+
             noBtn.style.position = 'fixed';
 
-            // Calculate random coordinates away from the edges
-            const padding = 100;
-            const x = Math.random() * (window.innerWidth - padding) + (padding / 2);
-            const y = Math.random() * (window.innerHeight - padding) + (padding / 2);
+            let x, y;
+            const padding = 60;
+            
+            // Generate a random position until it is NOT overlapping with the Yes button
+            do {
+                x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding) + padding/2;
+                y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding) + padding/2;
+            } while (
+                x < yesRect.right + 50 && 
+                x + noBtn.offsetWidth > yesRect.left - 50 &&
+                y < yesRect.bottom + 50 && 
+                y + noBtn.offsetHeight > yesRect.top - 50
+            );
 
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
